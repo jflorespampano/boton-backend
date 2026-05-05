@@ -1,0 +1,22 @@
+{
+  "name": "boton-backend",
+  "version": "1.0.0",
+  "description": "back en para el boton de panico",
+  "repository": {
+    "type": "git",
+    "url": "botonBackend"
+  },
+  "license": "ISC",
+  "author": "jflores",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node --watch --env-file=.env server.js",
+    "crear-db": "node crearBaseDeDatos.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.9.0",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3"
+  }
+}

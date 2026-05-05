@@ -1,0 +1,81 @@
+# archivo: consultas.http
+### obtener todos los usuarios
+GET http://localhost:3000/usuarios HTTP/1.1
+ 
+### obtener perfil del usuario
+GET http://localhost:3000/usuarios/3 HTTP/1.1
+
+### agregar usuario
+POST http://localhost:3000/usuarios HTTP/1.1
+content-type: application/json
+  
+{
+  "id":2,
+  "name":"paco",
+  "username":"user-paco",
+  "email":"email@paco",
+  "password":"mipassdepacp",
+  "matricula":"5678",
+  "telefono":"777",
+  "rol":"user"
+}
+
+### actualizaar datos del usuario
+PUT http://localhost:3000/usuarios HTTP/1.1
+content-type: application/json
+
+{
+  "id":3,
+  "name":"bety-3",
+  "username":"user-bety3",
+  "email":"bety3@gamail.com",
+  "password":"bety-pass",
+  "matricula":"1234",
+  "telefono":"555-7",
+  "rol":"user"
+}
+  
+### eliminar usuario
+DELETE http://localhost:3000/usuarios/3/contacts/1 HTTP/1.1
+
+### lista de contactos /:id/contacts
+GET http://localhost:3000/usuarios/3/contacts HTTP/1.1
+
+### agregar contacto
+POST http://localhost:3000/usuarios/3/contacts HTTP/1.1
+content-type: application/json
+
+{
+  "id":3,
+  "name":"ana contacto",
+  "email":"email@ana.contacto",
+  "telefono":"666",
+  "user_id":"3"
+}
+
+### obtener un contacto /:id/contacts/:cid
+GET http://localhost:3000/usuarios/1/contacts/1 HTTP/1.1
+
+### actualizar un contacto
+PUT http://localhost:3000/usuarios/3/contacts/3 HTTP/1.1
+content-type: application/json
+
+{
+  "name":"contacto de 3",
+  "email":"email@ana.contacto.de3",
+  "telefono":"333"
+}
+
+functon handleclickAlta(evento){
+  recopilar los datos del formulario
+  construir un json {campo:valor, campo:valor}
+  ejecutas la solicitud post a la ruta
+
+}
+
+functon handleclickMostrarCntactos(idUser){
+ 
+  r=ejecutas la solicitud get a la ruta 'http://localhost:300/users/idUser'
+  
+
+}
