@@ -61,19 +61,36 @@ function modelUsers(dbController=null){
         sql+= datos.matricula? `, matricula=@matricula`:''
         sql+= datos.telefono? `, telefono=@telefono`:''
         sql+= datos.rol? `, rol=@rol`:''
+        sql+= datos.mensaje_sos_global? `, mensaje_sos_global=@mensaje_sos_global`:''
         if(! (sql.length>logInit)){throw new Error("Debe haber al menos 1 campo a modoficar")}
         sql+=` where id=@id`
         open()
         const resp=run(sql, datos)
         close()
         return resp
+        }
         // return ({changes: 71, lastInsertRowid: 71, sql, datos})
+  
+    /**
+     * 
+     * @param {number} idUser ID del usuario
+     * @param {string} nuevoMensaje El nuevo mensaje personalizado
+     */
+    function updateMensajeSOS(idUser, nuevoMensaje){
+        const sql = `UPDATE users SET mensaje_sos_global = @mensaje WHERE id = @id`
+        open()
+        const resp = run(sql, { mensaje: nuevoMensaje, id: idUser })
+        close()
+        return resp
     }
+
+    
     return {
         getAll,
         get,
         create,
-        put
+        put,
+        updateMensajeSOS
     }
 }
 

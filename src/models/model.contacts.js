@@ -22,7 +22,7 @@ function modelContacts(dbController=null){
      * 
      * @param {number} idUser id del usuario
      * @param {number} idContact id del contacto
-     * @returns {object} un objeto de contacto {id: 1, name: "ana", email: "", telefono:"", user_id:1}
+     * @returns {object} un objeto de contacto {id: 1, name: "ana", email: "", telefono:"", message:"", user_id:1}
      */
     function get(idUser,idContact){
         open()
@@ -36,14 +36,14 @@ function modelContacts(dbController=null){
 
     /**
      * 
-     * @param {object} datos del contacto {name: "ana", email: "", telefono:"", user_id:1}
+     * @param {object} datos del contacto {name: "ana", telefono:"", message:"", user_id:1}
      * @returns {object} el objeto del usuario creado {changes: 1, lastInsertRowid: 1}
      */
     function create(datos){
     // console.log("recibido",datos)
         const sql=`
-        insert into contacts(name,email,telefono,user_id) 
-        values(@name,@email,@telefono,@user_id)
+        insert into contacts(name,telefono,message,user_id) 
+        values(@name,@telefono,@message,@user_id)
         `
         open()
         const resp=run(sql, datos)
@@ -53,7 +53,7 @@ function modelContacts(dbController=null){
 
     /**
      * 
-     * @param {object} datos del contacto {id: 0, name: "ana", email: "", telefono:"", user_id:0}
+     * @param {object} datos del contacto {id: 0, name: "ana", telefono:"", message:"",user_id:0}
      * @returns 
      */
     function put(datos){
@@ -61,8 +61,8 @@ function modelContacts(dbController=null){
         const logInit=sql.length
 
         sql+= datos.name? ` name=@name`:''
-        sql+= datos.email? `, email=@email`:''
         sql+= datos.telefono? `, telefono=@telefono`:''
+        sql+= datos.message? `, message=@message`:''
 
         if(! (sql.length>logInit)){throw new Error("Debe haber al menos 1 campo a modoficar")}
         sql+=` where id=@id and user_id=@user_id`

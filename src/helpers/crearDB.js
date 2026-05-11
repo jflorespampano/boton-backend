@@ -14,7 +14,8 @@ export function crearDB(){
         password STRING NOT NULL,
         matricula STRING NOT NULL UNIQUE,
         telefono STRING NOT NULL UNIQUE,
-        rol STRING NOT NULL DEFAULT 'user'
+        rol STRING NOT NULL DEFAULT 'user',
+        mensaje_sos_global STRING DEFAULT '¡Ayuda! Estoy en una emergencia. Esta es mi ubicación actual:'
     )    
     `
     db.exec(query)
@@ -32,31 +33,36 @@ export function crearDB(){
     
     data.forEach(user=>{
         const r=insertData.run(user.name, user.username, user.email, user.password, user.matricula, user.telefono)
-        console.log(r)
+        console.log("Usuario creado:", r.lastInsertRowid)
     })
 
     const queryContact=`CREATE TABLE contacts(
         id INTEGER PRIMARY KEY,
         name STRING NOT NULL,
-        email STRING NOT NULL UNIQUE,
-        telefono STRING NOT NULL UNIQUE,
+        telefono STRING NOT NULL,
+        message STRING DEFAULT '',
         user_id INTEGER NOT NULL,
         FOREIGN KEY (user_id) REFERENCES users(id)
+        UNIQUE(telefono, user_id) -- Evita contactos duplicados por usuario
     )    
     `
     db.exec(queryContact)
 
     const dataContact=[
-        {name:"maria",email:"maria@example.com",telefono:"555-4321",user_id:1},
-        {name:"pedro",email:"pedro@example.com",telefono:"555-8765",user_id:2},
-        {name:"laura",email:"laura@example.com",telefono:"555-2468",user_id:3}
+        {name:"maria",telefono:"555-4321",user_id:1},
+        {name:"pedro",telefono:"555-8765",user_id:2},
+        {name:"laura",telefono:"555-2468",user_id:3},
+        {name:"Mamá", telefono:"555-0000", user_id:4}, 
+        {name:"Mamá", telefono:"555-0000", user_id:5}
     ]
-    const insertDataContact=db.prepare(`insert into contacts(name,email,telefono,user_id) values(?,?,?,?)`)
+    const insertDataContact=db.prepare(`insert into contacts(name,telefono,user_id) values(?,?,?)`)
     
     dataContact.forEach(contact=>{
-        const r=insertDataContact.run(contact.name, contact.email, contact.telefono, contact.user_id)
-        console.log(r)
+        const r=insertDataContact.run(contact.name, contact.telefono, contact.user_id)
+        console.log("Contacto creado:", r.lastInsertRowid)
     })
 
     db.close()
 }
+
+//crearDB();
