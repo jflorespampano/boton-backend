@@ -1,10 +1,12 @@
 import express from 'express';
 import modelUsers from '../models/model.users.js';
 import modelContacts from '../models/model.contacts.js'
+import modelTrayectos from '../models/model.trayectos.js'
 
 const getRouterUser = (controllerDB=null) => {
     const modelUsersInstance = modelUsers(controllerDB);
-    const modelContactInstance = modelContacts(controllerDB)
+    const modelContactInstance = modelContacts(controllerDB);
+     const modelTrayectosInstance = modelTrayectos(controllerDB);
     const routerUser = express.Router();
 
     //usuarios
@@ -93,6 +95,101 @@ const getRouterUser = (controllerDB=null) => {
         // lógica para obtener los contactos del usuario con ese id
         res.json({ userId, cid });
     });
+
+     /**
+    * Obtener todos los trayectos de un usuario
+     * GET /usuarios/:id/trayectos
+     */
+    routerUser.get('/:id/trayectos', (req, res) => {
+        const userId = req.params.id;
+        const resp = modelTrayectosInstance.getAll(userId);
+        res.json(resp);
+    });
+
+    /**
+     * Obtener trayecto activo de un usuario
+     * GET /usuarios/:id/trayectos/activo
+     */
+    routerUser.get('/:id/trayectos/activo', (req, res) => {
+        const userId = req.params.id;
+        const trayectos = modelTrayectosInstance.getAll(userId);
+        const activo = trayectos.find(t => t.estado === 'activo') || null;
+        res.json(activo);
+    });
+
+    /**
+     * Crear un nuevo trayecto
+     * POST /usuarios/:id/trayectos
+     */
+    routerUser.post('/:id/trayectos', (req, res) => {
+        const userId = req.params.id;
+        const datos = req.body;
+
+            console.log("userId:", userId)        // <- agregar
+            console.log("datos recibidos:", datos) // <- agregar
+
+        const ahora = new Date();
+        ahora.setMinutes(ahora.getMinutes() + parseInt(datos.tiempo_estimado_min));
+        const vence_at = ahora.toISOString().replace('T', ' ').substring(0, 19);
+
+        const datosFinal = {
+            ...datos,
+            user_id: userId,
+            latitud_origen: datos.latitud_origen || null,
+            longitud_origen: datos.longitud_origen || null,
+            latitud_destino: datos.latitud_destino || null,
+            longitud_destino: datos.longitud_destino || null,
+            vence_at
+        };
+
+        console.log("datosFinal:", datosFinal) // <- agregar
+
+try {
+    const resp = modelTrayectosInstance.create(datosFinal);
+    const trayectoCreado = modelTrayectosInstance.get(userId, resp.lastInsertRowid);
+    res.json(trayectoCreado);
+} catch(e) {
+    console.log("Error:", e.message)
+    res.status(500).json({ error: e.message })
+}
+    });
+
+    /**
+     * Confirmar llegada
+     * PATCH /usuarios/:id/trayectos/:tid/confirmar-llegada
+     */
+    routerUser.patch('/:id/trayectos/:tid/confirmar-llegada', (req, res) => {
+        const user_id = req.params.id;
+        const id = req.params.tid;
+        const confirmado_at = new Date().toISOString().replace('T', ' ').substring(0, 19);
+
+        const resp = modelTrayectosInstance.put({
+            id,
+            user_id,
+            estado: 'completado',
+            confirmado_at
+        });
+        res.json(resp);
+    });
+
+    /**
+     * Cancelar trayecto
+     * PATCH /usuarios/:id/trayectos/:tid/cancelar
+     */
+    routerUser.patch('/:id/trayectos/:tid/cancelar', (req, res) => {
+        const user_id = req.params.id;
+        const id = req.params.tid;
+        const cancelado_at = new Date().toISOString().replace('T', ' ').substring(0, 19);
+
+        const resp = modelTrayectosInstance.put({
+            id,
+            user_id,
+            estado: 'cancelado',
+            cancelado_at
+        });
+        res.json(resp);
+    });
+
 
     return routerUser;
 }
